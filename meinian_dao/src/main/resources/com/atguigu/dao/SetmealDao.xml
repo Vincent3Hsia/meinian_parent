@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.atguigu.dao.SetmealDao">
+    <insert id="add" useGeneratedKeys="true" keyProperty="id">
+          insert into t_setmeal(
+               name, code, helpCode, sex, age, price, remark, attention, img
+
+          ) values(
+              #{name}, #{code}, #{helpCode}, #{sex}, #{age}, #{price}, #{remark}, #{attention}, #{img}
+          )
+    </insert>
+    <insert id="insert_setmeal_travelgroup">
+         insert into t_setmeal_travelgroup(setmeal_id,travelgroup_id) values(#{setmealId},#{travelgroupId})
+    </insert>
+    <select id="findPage" resultType="setmeal">
+        select * from t_setmeal
+        <if test="value!=null">
+            code=#{value} or helpcode=#{value} or name like concat('%',#{value},'%')
+        </if>
+    </select>
+
+    <select id="getSetmeal" resultType="setmeal">
+         select  * from t_setmeal
+    </select>
+
+
+    <resultMap id="findByIdResultMap" type="setmeal">
+         <id column="id" property="id"></id>
+        <result column="name" property="name"></result>
+        <result column="code" property="code"></result>
+        <result column="helpCode" property="helpCode"></result>
+        <result column="sex" property="sex"></result>
+        <result column="age" property="age"></result>
+        <result column="price" property="price"></result>
+        <result column="remark" property="remark"></result>
+        <result column="attention" property="attention"></result>
+        <result column="img" property="img"></result>
+        <!--一对多  查询当前套餐对应的跟团游集合 分步查询   column="id" 套餐的id 查询跟团游的条件
+           select =“调用查询跟团游的方法”
+        -->
+        <collection property="travelGroups" select="com.atguigu.dao.TravelgroupDao.findTravegroupsBySetmealId" column="id" ></collection>
+    </resultMap>
+
+
+
+     <!--
+         resultType="setmeal" 自动映射
+         resultMap  手动映射
+         映射: 数据库的表(字段) 和实体类(属性)
+     -->
+    <select id="findById" resultMap="findByIdResultMap">
+      select * from t_setmeal where id=#{id}
+</select>
+
+    <select id="getSetmealById" resultType="setmeal">
+        select * from t_setmeal where id=#{id}
+    </select>
+
+</mapper>
